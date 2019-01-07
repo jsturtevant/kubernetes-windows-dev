@@ -3,43 +3,43 @@ Guide to developing Kubernetes on Windows
 
 <!-- TOC -->
 
-- [How can I contribute to Kubernetes on Windows](#how-can-i-contribute-to-kubernetes-on-windows)
+  - [How can I contribute to Kubernetes on Windows](#how-can-i-contribute-to-kubernetes-on-windows)
     - [Features and Bugs](#features-and-bugs)
     - [Testing](#testing)
     - [Documentation and samples](#documentation-and-samples)
-- [Required tools](#required-tools)
-- [Building a cluster](#building-a-cluster)
+  - [Required tools](#required-tools)
+  - [Building a cluster](#building-a-cluster)
     - [Example acs-engine apimodel](#example-acs-engine-apimodel)
-- [Creating Windows pod deployments](#creating-windows-pod-deployments)
-- [Connecting to a Windows node](#connecting-to-a-windows-node)
+  - [Creating Windows pod deployments](#creating-windows-pod-deployments)
+  - [Connecting to a Windows node](#connecting-to-a-windows-node)
     - [Simple method - Remote Desktop](#simple-method---remote-desktop)
     - [Scriptable method - PowerShell Remoting](#scriptable-method---powershell-remoting)
-        - [If WinRM isn't enabled](#if-winrm-isnt-enabled)
-- [Collecting Logs](#collecting-logs)
-- [Hacking ACS-Engine](#hacking-acs-engine)
+      - [If WinRM isn't enabled](#if-winrm-isnt-enabled)
+  - [Collecting Logs](#collecting-logs)
+  - [Hacking ACS-Engine](#hacking-acs-engine)
     - [ACS-Engine Enlistment](#acs-engine-enlistment)
     - [ACS-Engine Build](#acs-engine-build)
-- [Hacking on Kubernetes for Windows](#hacking-on-kubernetes-for-windows)
+  - [Hacking on Kubernetes for Windows](#hacking-on-kubernetes-for-windows)
     - [Setting up a dev/build environment](#setting-up-a-devbuild-environment)
-        - [Kubernetes Enlistment for dev box](#kubernetes-enlistment-for-dev-box)
-        - [Kubernetes Enlistment for build VM](#kubernetes-enlistment-for-build-vm)
+      - [Kubernetes Enlistment for dev box](#kubernetes-enlistment-for-dev-box)
+      - [Kubernetes Enlistment for build VM](#kubernetes-enlistment-for-build-vm)
     - [Kubernetes Build](#kubernetes-build)
-        - [Copying files from the build VM](#copying-files-from-the-build-vm)
+      - [Copying files from the build VM](#copying-files-from-the-build-vm)
     - [Installing your build](#installing-your-build)
-        - [Copying binaries using Azure Files](#copying-binaries-using-azure-files)
-        - [Replacing files on the node](#replacing-files-on-the-node)
-- [Testing Kubernetes](#testing-kubernetes)
+      - [Copying binaries using Azure Files](#copying-binaries-using-azure-files)
+      - [Replacing files on the node](#replacing-files-on-the-node)
+  - [Testing Kubernetes](#testing-kubernetes)
     - [Sources for kubetest](#sources-for-kubetest)
     - [Building kubetest](#building-kubetest)
     - [Running Tests](#running-tests)
-        - [On an existing cluster](#on-an-existing-cluster)
-        - [With a new cluster on Azure](#with-a-new-cluster-on-azure)
-- [Building Other Components](#building-other-components)
+      - [On an existing cluster](#on-an-existing-cluster)
+      - [With a new cluster on Azure](#with-a-new-cluster-on-azure)
+  - [Building Other Components](#building-other-components)
     - [Azure-CNI](#azure-cni)
     - [ContainerD](#containerd)
-- [Quick tips on Windows administration](#quick-tips-on-windows-administration)
+  - [Quick tips on Windows administration](#quick-tips-on-windows-administration)
     - [If you did this in bash, do this in PowerShell](#if-you-did-this-in-bash-do-this-in-powershell)
-- [Credits](#credits)
+  - [Credits](#credits)
 
 <!-- /TOC -->
 
@@ -432,11 +432,13 @@ git checkout mybugfix
 Connect to the build VM with `vagrant ssh`. If you haven't already started a `tmux` session, run `tmux` to start one. It will hold the scrollback buffer, and let you disconnect and reconnect if needed without stopping a build. You can detach with _Ctrl-B, d_, and reattach later using `tmux list-sessions` to get the number, then `tmux attach-session -t #` to reconnect to it.
 
 
-From the build VM:
+The binaries that are supported for to run on Windows Server are `Kubelet` and `Kubeproxy`.  It is possible to build all the binaires for Windows using `./build/run.sh make cross KUBE_BUILD_PLATFORMS=windows/amd64` but to speed up your build time you can choose the component you are developing for such as `Kubelet` or `Kubeproxy`.  
+
+For example to build `Kubelet` from the build VM:
 
 ```bash
 cd ~/go/src/k8s.io/kubernetes
-./build/run.sh make cross KUBE_BUILD_PLATFORMS=windows/amd64
+./build/run.sh make kubelet KUBE_BUILD_PLATFORMS=windows/amd64
 ```
 
 It will scroll a lot as the API files are scanned, then eventually start building. Each build target has output similar to this accompanied with a few minutes of waiting.
